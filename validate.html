@@ -263,7 +263,7 @@
             document.getElementById('submitBtn').disabled = true;
 
             try {
-                const res = await fetch('https://Adpandey35-Launch-Signal.hf.space/api/validate', {
+                const response = await fetch('https://Adpandey35-Launch-Signal.hf.space/api/validate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ idea })

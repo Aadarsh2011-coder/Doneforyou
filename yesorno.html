@@ -3,33 +3,60 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>LaunchSignal – Validate</title>
-  <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700&display=swap" rel="stylesheet">
+  <title>PreLaunchIQ – Validate Your SaaS Before Building</title>
+  <meta name="description" content="AI-powered validation, SEO audit, and launch readiness for indie founders. Know if your idea is worth building—before you code.">
+  <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --primary: #0F766E;
+      --primary-light: #14B8A6;
+      --primary-dark: #134E4A;
+      --accent: #F59E0B;
+      --text-dark: #1F2937;
+      --bg-white: #FFFFFF;
+      --border: #E5E7EB;
+    }
     body {
       font-family: 'Epilogue', sans-serif;
-      background: #fff;
-      color: #1f2937;
+      background: var(--bg-white);
+      color: var(--text-dark);
       padding: 60px 20px;
       max-width: 600px;
       margin: 0 auto;
       line-height: 1.6;
     }
-    h1 { font-size: 28px; margin-bottom: 24px; }
+    .logo {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -0.5px;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+    .logo-accent {
+      color: var(--accent);
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
     .btn {
       display: inline-block;
       padding: 12px 24px;
       margin: 8px;
-      background: #0F766E;
+      background: var(--primary);
       color: white;
       text-decoration: none;
       border-radius: 8px;
       font-weight: 600;
+      cursor: pointer;
+      text-align: center;
     }
     .confirm-box {
       margin-top: 24px;
       padding: 16px;
-      border: 1px solid #e5e7eb;
+      border: 1px solid var(--border);
       border-radius: 8px;
       display: none;
     }
@@ -43,9 +70,10 @@
   </style>
 </head>
 <body>
+  <div class="logo">PreLaunch<span class="logo-accent">IQ</span></div>
   <h1>Do you already have a website?</h1>
-  <a href="#" class="btn" onclick="showConfirm('Yes')">Yes</a>
-  <a href="#" class="btn" onclick="showConfirm('No')">No</a>
+  <a class="btn" onclick="goTo('yes')">Yes</a>
+  <a class="btn" onclick="goTo('no')">No</a>
 
   <div id="confirmBox" class="confirm-box">
     <p>You selected: <strong id="selectedChoice"></strong></p>
@@ -56,17 +84,17 @@
   </div>
 
   <script>
-    let choice = '';
-    function showConfirm(c) {
-      choice = c;
-      document.getElementById('selectedChoice').textContent = c;
+    let mode = '';
+    function goTo(choice) {
+      mode = choice;
+      document.getElementById('selectedChoice').textContent = choice === 'yes' ? 'Yes' : 'No';
       document.getElementById('confirmBox').style.display = 'block';
     }
     function submitChoice() {
       const val = document.getElementById('confirmationInput').value.trim().toLowerCase();
       if (val === 'yes') {
-        // Later: send to backend
-        alert('Confirmed! Next step coming soon.');
+        const target = mode === 'yes' ? 'validateyes.html' : 'validateno.html';
+        window.location.href = target;
       } else {
         alert("Please type 'yes' exactly.");
       }

@@ -188,38 +188,69 @@
     <h2>Target Audience</h2>
     <ol><li>Indie Hackers</li><li>Early-Stage SaaS Founders</li><li>Product Managers</li></ol>
   </div>
-
   <script>
     function showSection(id) {
       document.getElementById(id).classList.add('visible');
     }
-
+  
     async function startValidation() {
       const idea = document.getElementById('ideaInput').value.trim();
       if (!idea) { alert('Please enter an idea'); return; }
-      
-      // Save idea for PDF
       document.getElementById('pdf-idea').textContent = idea;
-
-      // Hide input
       document.getElementById('input-section').style.display = 'none';
-
-      // Simulate real data fetch
-      setTimeout(() => {
-        document.getElementById('discussions-list').innerHTML = `
-          <div class="post-item"><strong>Hacker News</strong> • 2 days ago<br>“How do you validate a SaaS idea before coding? I don’t want to waste months.”</div>
-          <div class="post-item"><strong>Reddit r/Entrepreneur</strong> • 1 week ago<br>“Spent 6 months building… zero signups. What went wrong?”</div>
-          <div class="post-item"><strong>Indie Hackers</strong> • 3 days ago<br>“Looking for tools that test real demand, not just AI guesses.”</div>
-        `;
-        showSection('discussions-section');
-      }, 2000);
-
-      setTimeout(() => showSection('thinking-section'), 5000);
-      setTimeout(() => showSection('score-section'), 15000);
-      setTimeout(() => showSection('competitor-section'), 30000);
-      setTimeout(() => showSection('audience-section'), 45000);
+  
+      try {
+        // ✅ This works because of your binding: /api/validate → prebuiltiq
+        const res = await fetch('/api/validate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idea })
+        });
+        const data = await res.json();
+  
+        if (data.error) throw new Error(data.error);
+  
+        // Populate discussions
+        const discussionsHtml = (data.discussions || []).map(d => 
+          `<div class="post-item"><strong>${d.source}</strong> • ${d.date}<br>${d.title || d.text}</div>`
+        ).join('');
+        document.getElementById('discussions-list').innerHTML = discussionsHtml;
+  
+        document.getElementById('human-thinking').textContent = data.humanThinking || "";
+        document.getElementById('ai-thinking').textContent = data.aiThinking || "";
+        document.getElementById('urgency-score').textContent = (data.urgencyScore || 7.5).toFixed(1) + ' / 10';
+  
+        const gaps = data.competitorGaps || [];
+        document.querySelector('#competitor-section ul').innerHTML = gaps.map(g => `<li>${g}</li>`).join('');
+  
+        const audience = data.targetAudience || [];
+        document.querySelector('#audience-section ol').innerHTML = audience.map(a => 
+          `<li><strong>${a}</strong></li>`
+        ).join('');
+  
+        // Reveal sections
+        setTimeout(() => showSection('thinking-section'), 1000);
+        setTimeout(() => showSection('score-section'), 3000);
+        setTimeout(() => showSection('competitor-section'), 5000);
+        setTimeout(() => showSection('audience-section'), 7000);
+  
+      } catch (err) {
+        alert('Using demo data (Worker not fully configured yet)');
+        // Fallback to static demo (you already have this logic)
+        setTimeout(() => {
+          document.getElementById('discussions-list').innerHTML = `
+            <div class="post-item"><strong>Hacker News</strong> • 2 days ago<br>“How do you validate a SaaS idea before coding?”</div>
+            <div class="post-item"><strong>Reddit</strong> • 1 week ago<br>“Spent 6 months building… zero signups.”</div>
+          `;
+          showSection('discussions-section');
+        }, 2000);
+        setTimeout(() => showSection('thinking-section'), 5000);
+        setTimeout(() => showSection('score-section'), 15000);
+        setTimeout(() => showSection('competitor-section'), 30000);
+        setTimeout(() => showSection('audience-section'), 45000);
+      }
     }
-
+  
     function downloadReport() {
       const element = document.getElementById('report-content');
       const opt = {
@@ -232,5 +263,6 @@
       html2pdf().set(opt).from(element).save();
     }
   </script>
+  
 </body>
 </html>

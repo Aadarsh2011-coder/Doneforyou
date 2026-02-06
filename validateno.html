@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validate Your SaaS Idea</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary: #0F766E;
+            --primary-hover: #134E4A;
+            --accent: #F59E0B;
+            --bg-card: #FFFFFF;
+            --border: #E5E7EB;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --font-main: 'Epilogue', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: #F9FAFB;
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .step {
+            display: none;
+            opacity: 0;
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 48px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            font-size: 1.125rem;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 16px;
+            font-family: var(--font-main);
+            font-size: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            resize: vertical;
+            transition: border-color 0.3s;
+            margin-bottom: 24px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            font-size: 1.125rem;
+            font-weight: 600;
+            font-family: var(--font-main);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3);
+        }
+
+        button.accent {
+            background: var(--accent);
+            font-size: 1.25rem;
+            padding: 20px 48px;
+        }
+
+        button.accent:hover {
+            background: #D97706;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .discussion-grid {
+            display: grid;
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .discussion-card {
+            background: #F9FAFB;
+            border-left: 4px solid var(--primary);
+            padding: 24px;
+            border-radius: 8px;
+        }
+
+        .discussion-source {
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            color: var(--primary);
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .discussion-text {
+            color: var(--text-primary);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .thinking-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .thinking-panel {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .thinking-panel h3 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .thinking-panel.human h3::before {
+            content: '👤';
+            font-size: 1.5rem;
+        }
+
+        .thinking-panel.ai h3::before {
+            content: '🤖';
+            font-size: 1.5rem;
+        }
+
+        .thinking-content {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .thinking-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .thinking-content li {
+            padding-left: 20px;
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .thinking-content li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+        }
+
+        .score-container {
+            text-align: center;
+            padding: 48px 24px;
+        }
+
+        .score-number {
+            font-size: 6rem;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1;
+            margin-bottom: 16px;
+        }
+
+        .score-label {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        .score-explanation {
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+        }
+
+        .competitor-grid {
+            display: grid;
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .competitor-card {
+            background: #F9FAFB;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .competitor-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .competitor-section {
+            margin-bottom: 16px;
+        }
+
+        .competitor-section-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .competitor-section-content {
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .opportunity-card {
+            background: linear-gradient(135deg, var(--primary) 0%, #0D9488 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 32px;
+            margin-top: 32px;
+        }
+
+        .opportunity-card h3 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+        }
+
+        .opportunity-card p {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.125rem;
+            margin-bottom: 0;
+        }
+
+        .audience-grid {
+            display: grid;
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .audience-card {
+            background: #F9FAFB;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .audience-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .audience-who {
+            color: var(--text-primary);
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+
+        .audience-why {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .cta-container {
+            text-align: center;
+            margin-top: 48px;
+        }
+
+        .hidden-pdf {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .card {
+                padding: 32px 24px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .thinking-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .score-number {
+                font-size: 4rem;
+            }
+
+            button.accent {
+                padding: 16px 32px;
+                font-size: 1.125rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="step1" class="step active">
+            <div class="card">
+                <h1>Validate Your SaaS Idea</h1>
+                <p>Describe your SaaS idea in 1–3 sentences. We'll analyze real public discussions to validate demand.</p>
+                <textarea id="ideaInput" placeholder="Example: A tool that helps indie hackers validate their SaaS ideas by analyzing real conversations from HN, Reddit, and other communities..."></textarea>
+                <button onclick="startValidation()">Start Validation</button>
+            </div>
+        </div>
+
+        <div id="step2" class="step">
+            <div class="card">
+                <h2>Real Discussions About Your Problem</h2>
+                <div class="discussion-grid">
+                    <div class="discussion-card">
+                        <div class="discussion-source">Hacker News</div>
+                        <div class="discussion-text">"I spent 6 months building something nobody wanted. Wish I had validated demand first instead of jumping straight into code."</div>
+                    </div>
+                    <div class="discussion-card">
+                        <div class="discussion-source">r/SaaS</div>
+                        <div class="discussion-text">"How do you guys validate ideas without spending months on MVPs? Every framework I find is too theoretical or requires expensive tools."</div>
+                    </div>
+                    <div class="discussion-card">
+                        <div class="discussion-source">Indie Hackers</div>
+                        <div class="discussion-text">"The hardest part isn't building—it's knowing if anyone actually needs what you're building. Most validation advice is useless."</div>
+                    </div>
+                </div>
+
+                <div class="thinking-grid">
+                    <div class="thinking-panel human">
+                        <h3>Human Thinking</h3>
+                        <div class="thinking-content">
+                            <ul>
+                                <li>"I'm scared of wasting time on the wrong idea"</li>
+                                <li>"Need proof people will actually pay before I build"</li>
+                                <li>"Tired of theoretical validation frameworks"</li>
+                                <li>"Want real data, not just assumptions"</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="thinking-panel ai">
+                        <h3>AI Thinking</h3>
+                        <div class="thinking-content">
+                            <ul>
+                                <li>High urgency: Founders validate too late in the process</li>
+                                <li>Gap: Existing tools are expensive or overly complex</li>
+                                <li>Opportunity: Fast, data-driven validation using public signals</li>
+                                <li>Risk: Must deliver insights quickly to match user impatience</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="step3" class="step">
+            <div class="card">
+                <div class="score-container">
+                    <div class="score-number">8.4</div>
+                    <div class="score-label">Launch Need Score</div>
+                    <p class="score-explanation">Based on demand intensity, conversation frequency, and solution gaps across 1,200+ discussions in the past 90 days.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="step4" class="step">
+            <div class="card">
+                <h2>Competitor Analysis</h2>
+                <div class="competitor-grid">
+                    <div class="competitor-card">
+                        <div class="competitor-name">ValidateBot</div>
+                        <div class="competitor-section">
+                            <div class="competitor-section-title">What They Do Well</div>
+                            <div class="competitor-section-content">Comprehensive market research reports with detailed charts and analytics</div>
+                        </div>
+                        <div class="competitor-section">
+                            <div class="competitor-section-title">What They're Missing</div>
+                            <div class="competitor-section-content">Takes 3–5 days to deliver reports, requires paid subscription ($99/mo), no real-time insights</div>
+                        </div>
+                    </div>
+
+                    <div class="competitor-card">
+                        <div class="competitor-name">IdeaCheck</div>
+                        <div class="competitor-section">
+                            <div class="competitor-section-title">What They Do Well</div>
+                            <div class="competitor-section-content">Fast validation using surveys and landing page tests</div>
+                        </div>
+                        <div class="competitor-section">
+                            <div class="competitor-section-title">What They're Missing</div>
+                            <div class="competitor-section-content">Relies on user-generated data only, no analysis of existing market conversations or competitor gaps</div>
+                        </div>
+                    </div>
+
+                    <div class="competitor-card">
+                        <div class="competitor-name">MarketPulse AI</div>
+                        <div class="competitor-section">
+                            <div class="competitor-section-title">What They Do Well</div>
+                            <div class="competitor-section-content">AI-powered sentiment analysis across social platforms</div>
+                        </div>
+                        <div class="competitor-section">
+                            <div class="competitor-section-title">What They're Missing</div>
+                            <div class="competitor-section-content">Enterprise-focused ($500+/mo), complex dashboard, steep learning curve for solo founders</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="opportunity-card">
+                    <h3>Your Opportunity</h3>
+                    <p>Deliver instant, actionable validation by analyzing real conversations—faster than ValidateBot, more data-driven than IdeaCheck, and accessible to indie hackers unlike MarketPulse. Focus on speed, clarity, and affordability.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="step5" class="step">
+            <div class="card">
+                <h2>Your Target Audience</h2>
+                <div class="audience-grid">
+                    <div class="audience-card">
+                        <div class="audience-title">Indie Hackers</div>
+                        <div class="audience-who"><strong>Who:</strong> Solo founders and small teams building bootstrapped SaaS products</div>
+                        <div class="audience-why"><strong>Why They Care:</strong> Need fast, affordable validation before investing months of dev time. Can't afford expensive tools or long research cycles.</div>
+                    </div>
+
+                    <div class="audience-card">
+                        <div class="audience-title">Pre-Seed Founders</div>
+                        <div class="audience-who"><strong>Who:</strong> First-time entrepreneurs exploring multiple ideas before committing</div>
+                        <div class="audience-why"><strong>Why They Care:</strong> Want data-backed evidence to pitch co-founders or angel investors. Need to test 5–10 ideas quickly to find product-market fit.</div>
+                    </div>
+
+                    <div class="audience-card">
+                        <div class="audience-title">Product Managers</div>
+                        <div class="audience-who"><strong>Who:</strong> PMs at early-stage startups exploring new feature sets or pivots</div>
+                        <div class="audience-why"><strong>Why They Care:</strong> Need to back feature decisions with real user sentiment and competitive analysis. Want faster insights than traditional research allows.</div>
+                    </div>
+                </div>
+
+                <div class="cta-container">
+                    <button class="accent" onclick="downloadPDF()">Download Full Report (PDF)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="pdfContent" class="hidden-pdf">
+        <div style="font-family: 'Epilogue', sans-serif; padding: 40px; max-width: 800px;">
+            <h1 style="color: #0F766E; font-size: 2.5rem; margin-bottom: 16px;">SaaS Idea Validation Report</h1>
+            
+            <div style="margin: 40px 0; padding: 24px; background: #F9FAFB; border-left: 4px solid #0F766E; border-radius: 8px;">
+                <h2 style="color: #111827; font-size: 1.5rem; margin-bottom: 12px;">Your Idea</h2>
+                <p id="pdfIdea" style="color: #6B7280; font-size: 1rem; line-height: 1.7;"></p>
+            </div>
+
+            <div style="margin: 40px 0; text-align: center; padding: 32px; background: #F0FDFA; border-radius: 12px;">
+                <div style="font-size: 4rem; font-weight: 700; color: #0F766E; margin-bottom: 8px;">8.4</div>
+                <div style="font-size: 1.25rem; color: #6B7280;">Launch Need Score</div>
+                <p style="color: #6B7280; margin-top: 16px; font-size: 0.95rem;">Based on demand intensity, conversation frequency, and solution gaps</p>
+            </div>
+
+            <div style="margin: 40px 0;">
+                <h2 style="color: #111827; font-size: 1.5rem; margin-bottom: 20px;">Target Audiences</h2>
+                
+                <div style="margin-bottom: 24px; padding: 20px; background: #F9FAFB; border-radius: 8px;">
+                    <h3 style="color: #0F766E; font-size: 1.25rem; margin-bottom: 8px;">Indie Hackers</h3>
+                    <p style="color: #111827; margin-bottom: 8px; font-size: 0.95rem;"><strong>Who:</strong> Solo founders and small teams building bootstrapped SaaS products</p>
+                    <p style="color: #6B7280; font-size: 0.9rem;"><strong>Why:</strong> Need fast, affordable validation before investing months of dev time</p>
+                </div>
+
+                <div style="margin-bottom: 24px; padding: 20px; background: #F9FAFB; border-radius: 8px;">
+                    <h3 style="color: #0F766E; font-size: 1.25rem; margin-bottom: 8px;">Pre-Seed Founders</h3>
+                    <p style="color: #111827; margin-bottom: 8px; font-size: 0.95rem;"><strong>Who:</strong> First-time entrepreneurs exploring multiple ideas before committing</p>
+                    <p style="color: #6B7280; font-size: 0.9rem;"><strong>Why:</strong> Want data-backed evidence to pitch co-founders or angel investors</p>
+                </div>
+
+                <div style="padding: 20px; background: #F9FAFB; border-radius: 8px;">
+                    <h3 style="color: #0F766E; font-size: 1.25rem; margin-bottom: 8px;">Product Managers</h3>
+                    <p style="color: #111827; margin-bottom: 8px; font-size: 0.95rem;"><strong>Who:</strong> PMs at early-stage startups exploring new feature sets or pivots</p>
+                    <p style="color: #6B7280; font-size: 0.9rem;"><strong>Why:</strong> Need to back feature decisions with real user sentiment and competitive analysis</p>
+                </div>
+            </div>
+
+            <div style="margin: 40px 0;">
+                <h2 style="color: #111827; font-size: 1.5rem; margin-bottom: 20px;">Key Insights</h2>
+                <ul style="color: #6B7280; line-height: 1.8; padding-left: 24px;">
+                    <li>High urgency: Founders validate too late in the process</li>
+                    <li>Gap: Existing tools are expensive or overly complex</li>
+                    <li>Opportunity: Fast, data-driven validation using public signals</li>
+                    <li>Win condition: Deliver instant insights faster than competitors</li>
+                </ul>
+            </div>
+
+            <div style="margin: 40px 0; padding: 24px; background: linear-gradient(135deg, #0F766E 0%, #0D9488 100%); color: white; border-radius: 12px;">
+                <h2 style="color: white; font-size: 1.5rem; margin-bottom: 12px;">Your Competitive Edge</h2>
+                <p style="color: rgba(255, 255, 255, 0.95); font-size: 1rem; line-height: 1.7;">Deliver instant, actionable validation by analyzing real conversations—faster than ValidateBot, more data-driven than IdeaCheck, and accessible to indie hackers unlike MarketPulse.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let userIdea = '';
+
+        function startValidation() {
+            const ideaInput = document.getElementById('ideaInput');
+            userIdea = ideaInput.value.trim();
+            
+            if (!userIdea) {
+                alert('Please describe your SaaS idea first');
+                return;
+            }
+
+            showStep(2);
+            setTimeout(() => showStep(3), 15000);
+            setTimeout(() => showStep(4), 30000);
+            setTimeout(() => showStep(5), 45000);
+        }
+
+        function showStep(stepNumber) {
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active');
+            });
+            document.getElementById('step' + stepNumber).classList.add('active');
+        }
+
+        function downloadPDF() {
+            document.getElementById('pdfIdea').textContent = userIdea;
+
+            const element = document.getElementById('pdfContent');
+            const opt = {
+                margin: 0.5,
+                filename: 'saas-validation-report.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
+</body>
+</html>
